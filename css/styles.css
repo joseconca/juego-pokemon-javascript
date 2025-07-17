@@ -12,7 +12,6 @@ h1#gameTitle {
   color: white;
   /* Ajuste de tamaño de fuente en móviles */
   font-size: 4vw;          /* 4% del viewport width */
-  max-font-size: 40px;     /* no crecer más de 40px */
 }
 
 canvas {
@@ -41,7 +40,7 @@ canvas {
     border: none;
     display: block;
   }
-  
+
   h1#gameTitle {
     position: absolute;
     top: 8px;

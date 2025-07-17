@@ -98,18 +98,24 @@ export class Game {
 
   handleTouchStart(e) {
     e.preventDefault();
-    if (this.state !== 'playing') return;
 
     const touch = e.changedTouches[0];
+    const fakeClick = { clientX: touch.clientX, clientY: touch.clientY };
+  
+    if (this.state !== 'playing') {
+      this.handleClick(fakeClick);
+      return;
+    }
+
     const rect  = this.canvas.getBoundingClientRect();
     const mx    = touch.clientX - rect.left;
 
     this.keys[32] = true; // disparar
 
-    if (mx < this.canvas.width / 3) {
+    if (mx < this.canvas.width * 2/ 5) {
       this.keys[37] = true;
     }
-    else if (mx > this.canvas.width * 2 / 3) {
+    else if (mx > this.canvas.width * 3 / 5) {
       this.keys[39] = true;
     }
   }
@@ -243,7 +249,7 @@ export class Game {
       ctx.fillStyle = 'lightgreen';
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       ctx.fillStyle='white';ctx.font='30px Arial';ctx.textAlign='center';
-      ctx.fillText('Selecciona tu Pokémon',this.canvas.width/2, 280);
+      ctx.fillText('Selecciona tu Pokémon',this.canvas.width/2, this.canvas.height*2/5);
       this.selection.options.forEach(ch=>{
         ctx.drawImage(ch.image,ch.x+20,ch.y,this.selection.size*0.8,this.selection.size*0.8);
         ctx.fillText(ch.name,ch.x+this.selection.size*0.5,ch.y+this.selection.size);
