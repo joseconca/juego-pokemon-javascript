@@ -54,12 +54,11 @@ export class Game {
     const { size, gap } = this.selection;
     const totalW = CHARACTERS.length * size + (CHARACTERS.length - 1) * gap;
     let x = (this.canvas.width - totalW) / 2;
-    // Generar opciones con propiedad `image` que es un HTMLImageElement
     CHARACTERS.forEach(ch => {
       this.selection.options.push({
         name: ch.name,
-        image: this.images[ch.name], // Imagen ya cargada
-        color: ch.color,
+        image: this.images[ch.name],
+        projectile: ch.projectile,
         x,
         y: this.canvas.height/2 - size/2
       });
@@ -100,33 +99,22 @@ export class Game {
     e.preventDefault();
 
     const touch = e.changedTouches[0];
-    const fakeClick = { clientX: touch.clientX, clientY: touch.clientY };
-  
+    const rect  = this.canvas.getBoundingClientRect();
+    const mx    = touch.clientX - rect.left;
+
     if (this.state !== 'playing') {
+      const fakeClick = { clientX: touch.clientX, clientY: touch.clientY };
       this.handleClick(fakeClick);
       return;
     }
 
-    const rect  = this.canvas.getBoundingClientRect();
-    const mx    = touch.clientX - rect.left;
-
-    
-    this.keys[32] = true; // disparar
-    if (this.keys[32] && !this.projectiles.some(p=>p.owner==='player')) {
-      this.projectiles.push(new Projectile(
-        this.player.x+this.player.width/2-2.5, this.player.y,
-        5,15, 15,-1, this.bulletColor, 1, 'player'
-      ));
-      this.keys[32]=false;
-    }
-
-
-    if (mx < this.canvas.width * 2/ 5) {
+    if (mx < this.canvas.width * 2/5) {
       this.keys[37] = true;
-    }
-    else if (mx > this.canvas.width * 3 / 5) {
+    } else if (mx > this.canvas.width * 3/5) {
       this.keys[39] = true;
     }
+
+    this.keys[32] = true;
   }
 
   handleTouchEnd(e) {
@@ -144,7 +132,12 @@ export class Game {
       this.images[ch.name],
       this.canvas.width
     );
-    this.bulletColor = ch.color;
+    this.playerProjConfig = {
+      color:  ch.projectile.color,
+      width:  ch.projectile.width,
+      height: ch.projectile.height,
+      speed:  ch.projectile.speed
+    };
     this.score = 0;
     this.enemiesDefeated = 0;
     this.config.enemiesPerWave = this.config.initialEnemies;
@@ -226,9 +219,14 @@ export class Game {
     if (this.keys[37]) this.player.move('left');
     // disparo jugador
     if (this.keys[32] && !this.projectiles.some(p=>p.owner==='player')) {
+      const p = this.playerProjConfig;
       this.projectiles.push(new Projectile(
-        this.player.x+this.player.width/2-2.5, this.player.y,
-        5,15, 15,-1, this.bulletColor, 1, 'player'
+        this.player.x+this.player.width/2-p.width/2, this.player.y,
+        p.width, p.height, 
+        p.speed, -1, 
+        p.color, 
+        1, 
+        'player'
       ));
       this.keys[32]=false;
     }
@@ -272,6 +270,19 @@ export class Game {
       this.player.draw(ctx);
       this.projectiles.forEach(p=>p.draw(ctx));
       this.enemies.forEach(e=>e.draw(ctx));
+      //  Barra de salud 
+      const barWidth  = 150;
+      const barHeight = 10;
+      const x0 = -1, y0 = this.canvas.height-8;  // posición en pantalla
+      const ratio = this.player.health / this.player.maxHealth;
+      ctx.fillStyle = 'red';
+      ctx.fillRect(x0, y0, barWidth, barHeight);
+      ctx.fillStyle = 'green';
+      ctx.fillRect(x0, y0, barWidth * ratio, barHeight);
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x0, y0, barWidth, barHeight);
+      // puntuación
       ctx.fillStyle='white';ctx.font='20px Arial';ctx.textAlign='left';ctx.strokeStyle='black';ctx.lineWidth=1;
       ctx.strokeText(`Puntuación: ${this.score}`,10,25);
       ctx.fillText(`Puntuación: ${this.score}`,10,25);

@@ -10,17 +10,14 @@ body {
 h1#gameTitle {
   margin: 20px 0;
   color: white;
-  /* Ajuste de tamaño de fuente en móviles */
-  font-size: 4vw;          /* 4% del viewport width */
+  font-size: 4vw;          
 }
 
 canvas {
-  /* Que ocupe todo el ancho disponible, hasta 960px */
   width: 100%;
   max-width: 960px;
-  /* La altura se ajusta para mantener la proporción 960×500 */
   height: auto;
-  background-color: peachpuff;
+  background-color: rosybrown;
   border: 3px solid #000;
   display: block;
   margin: 0 auto;

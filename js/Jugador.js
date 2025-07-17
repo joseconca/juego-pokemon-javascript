@@ -4,7 +4,8 @@ export class Jugador {
     this.y = y;
     this.width = 100;
     this.height = 100;
-    this.health = 2;
+    this.maxHealth = 5;
+    this.health = this.maxHealth;
     this.destroyed = false;
 
     this.image = image;
