@@ -110,7 +110,16 @@ export class Game {
     const rect  = this.canvas.getBoundingClientRect();
     const mx    = touch.clientX - rect.left;
 
+    
     this.keys[32] = true; // disparar
+    if (this.keys[32] && !this.projectiles.some(p=>p.owner==='player')) {
+      this.projectiles.push(new Projectile(
+        this.player.x+this.player.width/2-2.5, this.player.y,
+        5,15, 15,-1, this.bulletColor, 1, 'player'
+      ));
+      this.keys[32]=false;
+    }
+
 
     if (mx < this.canvas.width * 2/ 5) {
       this.keys[37] = true;
@@ -131,7 +140,7 @@ export class Game {
     this.state = 'playing';
     this.player = new Jugador(
       this.canvas.width/2 - 75,
-      this.canvas.height - 100,
+      this.canvas.height*4/5,
       this.images[ch.name],
       this.canvas.width
     );
