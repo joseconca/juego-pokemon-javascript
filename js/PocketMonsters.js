@@ -1,6 +1,6 @@
 export const CHARACTERS = [
   { name: 'Pikachu', 
-    img: 'images/pikachu.png',  
+    img: 'resources/pokemon/pikachu.png',
     projectile: {
       color:  'yellow',
       width:  2,
@@ -9,7 +9,7 @@ export const CHARACTERS = [
     } 
   },
   { name: 'Charmander', 
-    img: 'images/charmander.png', 
+    img: 'resources/pokemon/charmander.png',
     projectile: {
       color:  'orange',
       width:  25,
@@ -18,7 +18,7 @@ export const CHARACTERS = [
     }
   },
   { name: 'Squirtle', 
-    img: 'images/squirtle.png', 
+    img: 'resources/pokemon/squirtle.png',
     projectile: {
       color:  'lightblue',
       width:  4,
