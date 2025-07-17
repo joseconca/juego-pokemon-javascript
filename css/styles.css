@@ -1,3 +1,4 @@
+/* styles.css */
 body {
   background-color: #252525;
   margin: 0;
@@ -5,14 +6,48 @@ body {
   text-align: center;
   overflow: hidden;
 }
+
 h1#gameTitle {
   margin: 20px 0;
   color: white;
+  /* Ajuste de tamaño de fuente en móviles */
+  font-size: 4vw;          /* 4% del viewport width */
+  max-font-size: 40px;     /* no crecer más de 40px */
 }
 
 canvas {
+  /* Que ocupe todo el ancho disponible, hasta 960px */
+  width: 100%;
+  max-width: 960px;
+  /* La altura se ajusta para mantener la proporción 960×500 */
+  height: auto;
   background-color: peachpuff;
   border: 3px solid #000;
   display: block;
   margin: 0 auto;
+}
+
+/* Para móviles */
+@media only screen and (max-width: 768px) {
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  canvas {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none;
+    max-height: none;
+    border: none;
+    display: block;
+  }
+  
+  h1#gameTitle {
+    position: absolute;
+    top: 8px;
+    width: 100%;
+    font-size: 6vw;
+    z-index: 10;
+    pointer-events: none;
+  }
 }

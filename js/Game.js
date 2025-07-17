@@ -71,6 +71,8 @@ export class Game {
 
   addListeners() {
     this.canvas.addEventListener('click', e => this.handleClick(e));
+    this.canvas.addEventListener('touchstart', e => this.handleTouchStart(e), {passive:false});
+    this.canvas.addEventListener('touchend',   e => this.handleTouchEnd(e),   {passive:false});
     document.addEventListener('keydown', e => this.keys[e.keyCode] = true);
     document.addEventListener('keyup', e => this.keys[e.keyCode] = false);
   }
@@ -94,11 +96,36 @@ export class Game {
     }
   }
 
+  handleTouchStart(e) {
+    e.preventDefault();
+    if (this.state !== 'playing') return;
+
+    const touch = e.changedTouches[0];
+    const rect  = this.canvas.getBoundingClientRect();
+    const mx    = touch.clientX - rect.left;
+
+    this.keys[32] = true; // disparar
+
+    if (mx < this.canvas.width / 3) {
+      this.keys[37] = true;
+    }
+    else if (mx > this.canvas.width * 2 / 3) {
+      this.keys[39] = true;
+    }
+  }
+
+  handleTouchEnd(e) {
+    e.preventDefault();
+    this.keys[37] = false;
+    this.keys[39] = false;
+    this.keys[32] = false;
+  }
+
   startGame(ch) {
     this.state = 'playing';
     this.player = new Jugador(
       this.canvas.width/2 - 75,
-      400,
+      this.canvas.height - 100,
       this.images[ch.name],
       this.canvas.width
     );
@@ -216,10 +243,10 @@ export class Game {
       ctx.fillStyle = 'lightgreen';
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       ctx.fillStyle='white';ctx.font='30px Arial';ctx.textAlign='center';
-      ctx.fillText('Selecciona tu Pokémon',this.canvas.width/2,80);
+      ctx.fillText('Selecciona tu Pokémon',this.canvas.width/2, 280);
       this.selection.options.forEach(ch=>{
-        ctx.drawImage(ch.image,ch.x,ch.y,this.selection.size,this.selection.size);
-        ctx.fillText(ch.name,ch.x+this.selection.size/2,ch.y+this.selection.size+30);
+        ctx.drawImage(ch.image,ch.x+20,ch.y,this.selection.size*0.8,this.selection.size*0.8);
+        ctx.fillText(ch.name,ch.x+this.selection.size*0.5,ch.y+this.selection.size);
       });
     } else if(this.state==='gameover') {
       ctx.fillStyle='darkred';ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
