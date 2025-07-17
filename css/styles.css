@@ -40,13 +40,8 @@ canvas {
     border: none;
     display: block;
   }
-
-  h1#gameTitle {
+   h1#gameTitle {
     position: absolute;
-    top: 8px;
-    width: 100%;
-    font-size: 6vw;
-    z-index: 10;
-    pointer-events: none;
+    visibility: hidden;
   }
 }
