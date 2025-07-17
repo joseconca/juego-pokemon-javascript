@@ -6,7 +6,7 @@ export class Enemigo {
     this.height = 50;
     this.image = image;
     this.speed = 2;
-    this.health = 2;
+    this.health = 1;
     this.destroyed = false;
     this.scoreValue = 3;
     this.scoreHitValue = 1;

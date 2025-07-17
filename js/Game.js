@@ -13,8 +13,9 @@ export class Game {
     this.config = Object.assign({
       initialEnemies: 1,
       enemiesPerWave: 1,
-      bossThreshold: 100,
-      enemyFireRate: 0.005
+      bossThreshold: 10,
+      enemyFireRate: 0.005,
+      fr: 0.005,
     }, config);
 
     this.selection = { options: [], size: 120, gap: 40 };
@@ -24,6 +25,8 @@ export class Game {
     this.score = 0;
     this.enemiesDefeated = 0;
     this.bossSpawned = false;
+    this.enrage = 1; // factor de enrage para el boss
+    this.playerLevel = 1;
 
     this.images = {};
     this.loadAssets().then(() => {
@@ -160,6 +163,13 @@ export class Game {
       const x = Math.random()*(this.canvas.width-60);
       this.enemies.push(new Enemigo(x,50,this.enemyImg,this.canvas.width));
     }
+    if(this.bossSpawned === true) {
+      if (this.playerLevel < 5) {
+        this.playerLevel+=0.2;
+      }
+      this.player.maxHealth *= this.playerLevel;
+      this.player.health = this.player.maxHealth;
+    }
     this.bossSpawned = false;
   }
 
@@ -173,7 +183,9 @@ export class Game {
 
   handleSpawning() {
     if (this.enemies.length === 0) {
-      if (!this.bossSpawned && this.score >= this.config.bossThreshold) this.spawnBoss();
+      if (!this.bossSpawned && this.score >= this.config.bossThreshold){
+        this.spawnBoss();
+      }
       else this.spawnWave();
     }
   }
@@ -222,8 +234,8 @@ export class Game {
       const p = this.playerProjConfig;
       this.projectiles.push(new Projectile(
         this.player.x+this.player.width/2-p.width/2, this.player.y,
-        p.width, p.height, 
-        p.speed, -1, 
+        p.width*this.playerLevel, p.height*this.playerLevel, 
+        p.speed*this.playerLevel, -1, 
         p.color, 
         1, 
         'player'
@@ -232,10 +244,20 @@ export class Game {
     }
     // disparo enemigos
     this.enemies.forEach(en=>{
-      if (Math.random()<this.config.enemyFireRate) {
+      if (Math.random()<this.config.enemyFireRate * this.enrage) {
+        var damage = 1;
+        var size = 8;
+        this.enrage = 1;
+        if (en instanceof Boss){
+          damage = 2;
+          size = 30;
+          if (en.health < en.maxHealth / 3) {
+              this.enrage = 20;
+          }
+        }
         this.projectiles.push(new Projectile(
           en.x+en.width/2-2, en.y+en.height,
-          5,10, 8,1, 'red', 1, 'enemy'
+          5,10, size ,1, 'red', damage, 'enemy'
         ));
       }
     });
@@ -273,7 +295,7 @@ export class Game {
       //  Barra de salud 
       const barWidth  = 150;
       const barHeight = 10;
-      const x0 = -1, y0 = this.canvas.height-8;  // posición en pantalla
+      const x0 = this.canvas.width*2/5, y0 = 10;  // posición en pantalla
       const ratio = this.player.health / this.player.maxHealth;
       ctx.fillStyle = 'red';
       ctx.fillRect(x0, y0, barWidth, barHeight);
@@ -286,6 +308,12 @@ export class Game {
       ctx.fillStyle='white';ctx.font='20px Arial';ctx.textAlign='left';ctx.strokeStyle='black';ctx.lineWidth=1;
       ctx.strokeText(`Puntuación: ${this.score}`,10,25);
       ctx.fillText(`Puntuación: ${this.score}`,10,25);
+      // nivel
+      ctx.fillStyle='white';ctx.font='20px Arial';ctx.textAlign='left';ctx.strokeStyle='black';ctx.lineWidth=1;
+      ctx.strokeText(`level: ${this.playerLevel}`,10,45);
+      ctx.fillText(`level: ${this.playerLevel}`,10,45);
+
+
       requestAnimationFrame(this.loop);
     }
   }
